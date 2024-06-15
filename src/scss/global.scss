@@ -1,0 +1,112 @@
+@use 'utilities/variables' as *;
+@use 'utilities/functions' as *;
+@use './utilities/reset';
+@use 'sass:map';
+
+@use 'variables.scss';
+@use 'colors.scss';
+
+
+html {
+  font-size: font-properties("size-global");
+  color: elements-colors("text");
+  font-family: #{font-properties("default-font")};
+}
+
+body {
+  background-color: var(--secondary-color);
+}
+
+@for $i from 1 through 6 {
+  h#{$i}, .header#{$i} {
+    font-size: elements-sizes("h#{$i}");
+    padding: elements-paddings("h#{$i}");
+    font-weight: elements-weights("h#{$i}");
+    color: elements-colors("h#{$i}");
+  }
+}
+
+button {
+  border: none;
+  background: none;
+  color: inherit;
+
+}
+
+p {
+  padding: elements-paddings("p");
+  font-size: elements-sizes("p");
+}
+
+small {
+  font-size: elements-sizes("small");
+}
+
+b {
+  font-weight: elements-weights("bold");
+}
+
+i {
+  font-style: italic;
+}
+
+mark {
+  background-color: elements-colors("mark-bg");
+  color: elements-colors("mark");
+}
+
+hr {
+  color: elements-colors("hr");
+  border-style: solid;
+}
+
+ul {
+  li {
+    padding: elements-paddings("li");
+  }
+
+  &.decorated {
+    li {
+      &:before {
+        content: "•";
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+a {
+  text-decoration: none;
+  color: elements-colors("a");
+  text-decoration: underline;
+
+  &:hover {
+    color: elements-colors("a:hover");
+    transition: all 0.2s linear 0s;
+  }
+}
+
+
+%menu-color {
+    color: elements-colors("menu");
+}
+
+
+// /* ESTILOS DE FUENTE */
+
+.font-handmade {
+    font-family: map.get($font-names, "handmade"), sans-serif;
+}
+
+%contrast-color {
+    color: var(--neutral-dark-color);
+}
+.font-contrast-color {
+    @extend %contrast-color;
+
+    b, hr {
+        @extend %contrast-color;
+    }
+}
+
