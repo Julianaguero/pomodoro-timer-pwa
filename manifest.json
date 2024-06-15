@@ -1,13 +1,13 @@
 {
     "name": "Pomodoro Timer",
-    "short_name": "PomodoroTimer",
+    "short_name": "Pomodoro",
     "start_url":"/index.html",
     "scope": ".",
     "display": "standalone",
     "background_color": "#59335c",
     "theme_color": "#ae75b3",
     "orientation": "portrait-primary",
-    "description": "This is a timer app",
+    "description": "A simple and effective Pomodoro Timer PWA.",
     "dir": "ltr",
     "lang": "es-ES",
     "icons": [

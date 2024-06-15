@@ -26,6 +26,7 @@ export class App extends LitElement {
   static properties = {
     timerValue: { type: Number, state: true },
     finishMessage: { type: String, state: true },
+    showFinishMessage: { type: Boolean, state: true }, 
     _isPomodoro: { type: Boolean, state: true },
     _isTimer: { type: Boolean, state: true },
     _pomodoroTimer: { type: Object, state: true },
@@ -36,6 +37,7 @@ export class App extends LitElement {
     super();
     this.timerValue = 0;
     this.finishMessage = "Time's up!";
+    this.showFinishMessage = true;
     this._isPomodoro = true;
     this._isTimer = false;
     this._pomodoroTimer = {
@@ -81,6 +83,8 @@ export class App extends LitElement {
     const mode = e.target.dataset.mode;
     this._isPomodoro = mode === "pomodoro";
     this._isTimer = mode === "timer";
+
+    this.showFinishMessage = false; 
 
     this._isTimer ? this._setCountDownTimer() : this._setPomodoroTimer();
 
@@ -129,22 +133,38 @@ export class App extends LitElement {
   }
 
   _handleChangeValue(e) {
-    const newValue = Number(e.target.value);
-    const id = e.target.id;
+    const input = e.target;
+    const newValue = input.value;
 
-    const timerMap = {
-      "pomodoro-input": "_pomodoroTimer",
-      "break-input": "_breakTimer",
-    };
+    // Verificar si el valor cumple con el patrón de números enteros positivos
+    const isValid = /^[0-9]+$/.test(newValue);
 
-    if (this._isPomodoro && timerMap[id]) {
-      this[timerMap[id]] = { ...this[timerMap[id]], value: newValue };
-      this._setPomodoroTimer();
-    } else if (this._isTimer && id === "countdown-input") {
-      this._countdownTimer = { ...this._countdownTimer, value: newValue };
-      this._setCountDownTimer();
+    if (isValid) {
+      input.setCustomValidity("");
+      const id = e.target.id;
+
+      const timerMap = {
+        "pomodoro-input": "_pomodoroTimer",
+        "break-input": "_breakTimer",
+        "countdown-input": "_countdownTimer"
+      };
+
+      if (this._isPomodoro && timerMap[id]) {
+        this[timerMap[id]] = { ...this[timerMap[id]], value: Number(newValue) };
+        this._setPomodoroTimer();
+      } else if (this._isTimer && id === "countdown-input") {
+        this._countdownTimer = { ...this._countdownTimer, value: Number(newValue) };
+        this._setCountDownTimer();
+      }
+    } else {
+      // Si no es válido, muestra un mensaje de error personalizado
+      input.setCustomValidity("Por favor, ingresa un número entero positivo.");
     }
+
+    // Actualiza la validación
+    input.reportValidity();
   }
+
 
   _handleIsFinished(e) {
     if (this._isPomodoro) {
@@ -157,6 +177,7 @@ export class App extends LitElement {
       }
       this._setPomodoroTimer();
     }
+    this.showFinishMessage = true;  
     e.stopPropagation();
     this.requestUpdate();
   }
@@ -170,6 +191,14 @@ export class App extends LitElement {
       : this._pomodoroTimer.message;
 
     this._toggleSpanClasses();
+  }
+
+  _restartTimers() {
+    if (this._isPomodoro) {
+      this.timerValue = 20 * 60;
+    } else {
+      this.timerValue = 10;
+    }
   }
 
   _setCountDownTimer() {
@@ -216,6 +245,7 @@ export class App extends LitElement {
             min="0"
             .value="${value}"
             @input="${this._handleChangeValue}"
+            pattern="^[0-9]*$"
             required
           />
           <small>${time}</small>
@@ -272,11 +302,10 @@ export class App extends LitElement {
           pause-btn
           play-btn
           reset-btn
-          finish-message="${this.finishMessage}"
+          finish-message="${this.showFinishMessage ? this.finishMessage : ''}"
         >
           <timer-component
             start="${this.timerValue}"
-            finish-message="${this.finishMessage}"
             reverse
           ></timer-component>
           <sound-component src="${sheepSound}"></sound-component>
